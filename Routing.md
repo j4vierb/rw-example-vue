@@ -79,3 +79,11 @@ const routes = [
   }
 ]
 ```
+
+5. Is posible to do redirections using `useRouter` from `vue-router`. 
+
+Using the path as string: `router.push('/about');`
+Path with an object: `router.push({ path: '/about'});`
+Named path: `router.push({ name: 'about-path'});`
+Dynamic segment: `router.push({ name: 'event-details', params: { id: 3 } });`
+Query parameter: `router.push({ name: 'event-details', query: { id: 3 } });` (`/?id=2`)
