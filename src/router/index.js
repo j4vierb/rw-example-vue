@@ -1,7 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import EventListView from '../views/EventListView.vue'
-import EventDetailsView from '@/views/EventDetailsView.vue';
+
 import AboutView from '@/views/AboutView.vue';
+import EventListView from '../views/EventListView.vue'
+import EventLayout from '@/views/event/Layout.vue';
+import EventDetails from '@/views/event/Details.vue';
+import EventRegister from '@/views/event/Register.vue';
+import EventEdit from '@/views/event/Edit.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,18 +13,53 @@ const router = createRouter({
     {
       path: '/',
       name: 'event-list',
-      component: EventListView
+      component: EventListView,
+      // parse route param
+      props: (route) => ({page: parseInt(route.query.page) || 1})
+    },
+    {
+      path: '/events/:id',
+      name: 'event-layout',
+      // can't parse because isn't a param is part
+      // of the URL
+      props: true,
+      component: EventLayout,
+      // nested routes
+      children: [
+        {
+          path: "",
+          name: "event-details",
+          component: EventDetails
+        },
+        {
+          path: 'register',
+          name: 'event-register',
+          component: EventRegister
+        },
+        {
+          path: 'edit',
+          name: 'event-edit',
+          component: EventEdit
+        },
+      ]
     },
     {
       path: '/event/:id',
-      name: 'event-details',
-      props: true,
-      component: EventDetailsView
+      redirect: () => {
+        return {
+          name: 'event-details'
+        }
+      }
     },
     {
-      path: '/about',
+      path: '/about-us',
       name: 'about',
-      component: AboutView
+      component: AboutView,
+      alias: '/about' // both about-us and about shows the same component
+    },
+    { // using redirect to the new route
+      path: '/about',
+      redirect: { name: 'about' }
     }
   ]
 })

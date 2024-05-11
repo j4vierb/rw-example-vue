@@ -34,3 +34,4 @@ coverage
 jsconfig.json
 package-lock.json
 vite
+.vscode
