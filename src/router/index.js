@@ -41,6 +41,7 @@ const router = createRouter({
         {
           path: 'edit',
           name: 'event-edit',
+          meta: { requireAuth: true },
           component: EventEdit
         },
       ]
@@ -56,7 +57,7 @@ const router = createRouter({
     {
       path: '/about-us',
       name: 'about',
-      component: AboutView,
+      component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue'),
       alias: '/about' // both about-us and about shows the same component
     },
     { // using redirect to the new route
@@ -80,6 +81,24 @@ const router = createRouter({
       component: NetworkError
     }
   ]
+});
+
+router.beforeEach((to, from) => {
+  //NProgress.start();
+  const notAuthorized = true;
+  if(to.meta.requireAuth && notAuthorized) {
+    //globalStore.flashMessage = 'Sorry you are not authorized to view this page';
+    console.warn('Sorry you are not authorized to view this page');
+    /* setTimeout(() => {
+      globalStore.flashMessage = '';
+    }, 3000); */
+
+    if(from.href) { // if the navegation came from a previous page
+      return false;
+    } else {
+      return { path: '/' };
+    }
+  }
 })
 
 export default router;

@@ -87,3 +87,71 @@ Path with an object: `router.push({ path: '/about'});`
 Named path: `router.push({ name: 'about-path'});`
 Dynamic segment: `router.push({ name: 'event-details', params: { id: 3 } });`
 Query parameter: `router.push({ name: 'event-details', query: { id: 3 } });` (`/?id=2`)
+
+6. Route meta fields
+
+Include extra information with the routes.
+
+For example, to implement authorization:
+
+```js
+// routes.js
+{
+  path: 'edit',
+  name: 'event-edit',
+  component: EventEdit,
+  meta: { requireAuth: true }
+}
+
+...
+
+router.beforeEach((to, from) => {
+  NProgress.start();
+
+  const notAuthorized = true;
+  if(to.meta.requireAuth && notAuthorized) {
+    globalStorage.flashMessage = 'Sorry, you are not authorized to view this page';
+
+    setTimeout(() => {
+      globalStorage.flashMessage = '';
+    }, 3000);
+
+    // cancel the navegation
+    return false;
+  }
+});
+```
+
+**note**: Meta property in route objects gets inherited by children routes. For example, if `/events/` has `authorizationRequired` as `meta` property, then `/events/edit/`, `/events/register/` and `/events/details/` will have that `meta` property.
+
+7. Lazy loading routes
+
+Split parts of our application into different JavaScript files.
+
+Is possible that some routes have their own bundle files.
+
+```js
+// routes.js
+{
+  // route
+  component: () => import(/* webpackChunkName: "about" */ '../views/About.vue');
+}
+```
+
+8. Scroll behavior
+
+Make the navigation more user-friendly.
+
+```js
+// router.js
+const router = createRouter({
+  // ...
+  scrollBehavior(to, from, savedPosition) {
+    if(savedPosition) {
+      return savedPosition;
+    } else {
+      return { top: 0 };
+    }
+  }
+});
+```
